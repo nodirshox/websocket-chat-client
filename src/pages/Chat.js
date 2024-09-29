@@ -65,7 +65,20 @@ function Chat() {
 
   return (
     <div className="Chat">
-      <h2>Chat</h2>
+      <h2>
+        Chat{" "}
+        <button
+          style={{
+            padding: "10px",
+            marginLeft: "5px",
+            fontSize: "16px",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate("/chats")}
+        >
+          Go back
+        </button>
+      </h2>
       <div
         style={{
           maxHeight: "300px",
@@ -101,19 +114,7 @@ function Chat() {
         </button>
       </div>
 
-      <div>
-        <button
-          style={{
-            padding: "10px",
-            marginLeft: "5px",
-            fontSize: "16px",
-            cursor: "pointer",
-          }}
-          onClick={() => navigate("/chats")}
-        >
-          Go back
-        </button>
-      </div>
+      <div></div>
     </div>
   );
 }

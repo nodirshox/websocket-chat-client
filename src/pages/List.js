@@ -4,7 +4,7 @@ import { API_URL } from "../api";
 
 function List() {
   const [chats, setChats] = useState([]);
-  const [newChatUsername, setNewChatUsername] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -40,20 +40,39 @@ function List() {
   }, []);
 
   const handleCreateChat = async () => {
-    navigate(`/chats/${newChatUsername}`);
+    if (username.length === 0) {
+      alert("Enter username");
+      return;
+    }
+    try {
+      const response = await fetch(`${API_URL}/chats/${username}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setChats(data.data);
+        navigate(`/chats/${data.id}`);
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError("An error occurred while fetching chat");
+    }
   };
 
   return (
     <div>
-      <h2>Your Chats</h2>
+      <h2>Chats</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <ul>
         {chats.map((chat) => (
-          <li
-            key={chat.chatId}
-            onClick={() => navigate(`/chats/${chat.chatId}`)}
-          >
-            Chat with {chat.user.username}
+          <li key={chat.chatId}>
+            {chat.user.username}{" "}
+            <button onClick={() => navigate(`/chats/${chat.chatId}`)}>
+              Chat
+            </button>
           </li>
         ))}
       </ul>
@@ -63,8 +82,8 @@ function List() {
         <input
           type="text"
           placeholder="Enter username"
-          value={newChatUsername}
-          onChange={(e) => setNewChatUsername(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <button onClick={handleCreateChat}>Create Chat</button>
       </div>
