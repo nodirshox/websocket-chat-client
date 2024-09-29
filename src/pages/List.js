@@ -36,34 +36,11 @@ function List() {
     };
 
     fetchChats();
+    // eslint-disable-next-line
   }, []);
 
   const handleCreateChat = async () => {
-    const token = localStorage.getItem("jwtToken");
-    if (!newChatUsername.trim()) {
-      setError("Please enter a username.");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:4000/api/chats", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ username: newChatUsername }),
-      });
-
-      if (response.ok) {
-        const chat = await response.json();
-        navigate(`/chat/${chat.id}`);
-      } else {
-        setError("Failed to create chat.");
-      }
-    } catch (err) {
-      setError("An error occurred while creating the chat.");
-    }
+    navigate(`/chats/${newChatUsername}`);
   };
 
   return (
@@ -72,8 +49,11 @@ function List() {
       {error && <p style={{ color: "red" }}>{error}</p>}
       <ul>
         {chats.map((chat) => (
-          <li key={chat.id} onClick={() => navigate(`/chats/${chat.id}`)}>
-            Chat with {chat.username}
+          <li
+            key={chat.chatId}
+            onClick={() => navigate(`/chats/${chat.chatId}`)}
+          >
+            Chat with {chat.user.username}
           </li>
         ))}
       </ul>

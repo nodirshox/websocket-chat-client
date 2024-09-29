@@ -5,6 +5,7 @@ import { API_URL } from "../api";
 
 function Chat() {
   const { chatId } = useParams();
+
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
@@ -34,6 +35,7 @@ function Chat() {
     setSocket(newSocket);
 
     return () => newSocket.close();
+    // eslint-disable-next-line
   }, [chatId]);
 
   useEffect(() => {
@@ -55,6 +57,7 @@ function Chat() {
       socket.emit("sendMessage", {
         chatId,
         message,
+        type: "TEXT",
       });
       setMessage("");
     }
@@ -97,7 +100,20 @@ function Chat() {
           Send
         </button>
       </div>
-      <div onClick={() => navigate("/chats")}>Go back</div>
+
+      <div>
+        <button
+          style={{
+            padding: "10px",
+            marginLeft: "5px",
+            fontSize: "16px",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate("/chats")}
+        >
+          Go back
+        </button>
+      </div>
     </div>
   );
 }
