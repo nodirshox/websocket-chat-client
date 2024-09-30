@@ -6,6 +6,8 @@ function List() {
   const [chats, setChats] = useState([]);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +37,25 @@ function List() {
       }
     };
 
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch(`${API_URL}/users/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData.data);
+        } else {
+          setError("Failed to load user info.");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching user info.");
+      }
+    };
+
+    fetchUserInfo();
     fetchChats();
     // eslint-disable-next-line
   }, []);
@@ -62,8 +83,14 @@ function List() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("jwtToken");
+    navigate("/login");
+  };
+
   return (
     <div>
+      {user && <h2>Hi, {user.username}</h2>}
       <h2>Chats</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <ul>
@@ -87,6 +114,9 @@ function List() {
         />
         <button onClick={handleCreateChat}>Create Chat</button>
       </div>
+      <button onClick={handleLogout} style={{ marginTop: "20px" }}>
+        Logout
+      </button>
     </div>
   );
 }
