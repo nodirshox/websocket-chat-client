@@ -20,12 +20,13 @@ function Login() {
       });
 
       if (response.ok) {
-        const { token } = await response.json();
+        const { user, token } = await response.json();
         // Save the token in localStorage or state
         localStorage.setItem("jwtToken", token.access);
+        localStorage.setItem("userId", user.id);
 
         // Redirect to the chat page
-        navigate("/chats");
+        navigate("/index");
       } else {
         setError("Invalid credentials. Please try again.");
       }

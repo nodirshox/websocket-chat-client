@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../api";
+import { API_URL } from "../../api";
 
 function List() {
   const [chats, setChats] = useState([]);
@@ -11,7 +11,6 @@ function List() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the list of chats when the page loads
     const token = localStorage.getItem("jwtToken");
 
     if (!token) {
@@ -21,7 +20,7 @@ function List() {
 
     const fetchChats = async () => {
       try {
-        const response = await fetch(`${API_URL}/chats`, {
+        const response = await fetch(`${API_URL}/chats?type=DIRECT`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -83,14 +82,10 @@ function List() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("jwtToken");
-    navigate("/login");
-  };
-
   return (
     <div>
       {user && <h2>Hi, {user.username}</h2>}
+
       <h2>Chats</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <ul>
@@ -114,8 +109,8 @@ function List() {
         />
         <button onClick={handleCreateChat}>Create Chat</button>
       </div>
-      <button onClick={handleLogout} style={{ marginTop: "20px" }}>
-        Logout
+      <button onClick={() => navigate("/index")} style={{ marginTop: "20px" }}>
+        Back
       </button>
     </div>
   );

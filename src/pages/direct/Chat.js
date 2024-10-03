@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import { useParams, useNavigate } from "react-router-dom";
-import { API_URL } from "../api";
+import { API_URL } from "../../api";
 
 function Chat() {
   const { chatId } = useParams();
@@ -9,6 +9,7 @@ function Chat() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
+  const currentUserId = localStorage.getItem("userId");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,8 +47,16 @@ function Chat() {
           {
             senderId: messageData.senderId,
             message: messageData.message,
+            id: messageData.id,
+            seen: true,
           },
         ]);
+      });
+
+      socket.on("messageDeleted", ({ messageId }) => {
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.id !== messageId)
+        );
       });
     }
   }, [socket]);
@@ -61,6 +70,10 @@ function Chat() {
       });
       setMessage("");
     }
+  };
+
+  const handleDeleteMessage = (messageId) => {
+    socket.emit("deleteMessage", { messageId, chatId });
   };
 
   return (
@@ -88,8 +101,25 @@ function Chat() {
         }}
       >
         <ul>
-          {messages.map((msg, index) => (
-            <li key={index}>{msg.message}</li>
+          {messages.map((msg) => (
+            <li key={msg.id}>
+              {msg.message}
+              {msg.senderId === currentUserId && (
+                <button
+                  style={{
+                    marginLeft: "10px",
+                    padding: "5px",
+                    cursor: "pointer",
+                    borderRadius: "5px",
+                    color: "#ffffff",
+                    backgroundColor: "red",
+                  }}
+                  onClick={() => handleDeleteMessage(msg.id)}
+                >
+                  Delete
+                </button>
+              )}
+            </li>
           ))}
         </ul>
       </div>
